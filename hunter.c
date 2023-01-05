@@ -87,6 +87,7 @@ void checkForGhost(HunterType* hunter){
 	if(hunter->room->ghost != NULL){
 		hunter->fear += 1;
 		hunter->boredom = BOREDOM_MAX;
+		printf("HUNTER HAS ENCOUNTERED A GHOST!\n");
 	}
 }
 
@@ -107,6 +108,8 @@ void* readEvidence(void* hunterArg){
 	EvidenceNode* curr = hunter->room->evidences->head;
 	EvidenceNode* prev = hunter->room->evidences->head;
 		while(curr != NULL){
+			//printf("current is: \n");
+			//printEvidence(curr->data);
 			if(curr->data->evidenceType == hunter->evidenceType){
 				if(checkForGhostly(curr->data) == 1){
 					hunter->boredom = BOREDOM_MAX;
@@ -133,41 +136,33 @@ void* readEvidence(void* hunterArg){
 }
 
 /*
-  Function: communicatingEvidence
-  Purpose:  communicates evidence with a hunter if there is a hunter in the room 
-   in/out:  A pointer to a HunterType
+  Function: switchDevice
+  Purpose:  Changes the type of evidence the hunter can read
+   in/out:  A void pointer to a HunterType
    return:  void
 */
-void* communicatingEvidence(void* hunterArg){
+void* switchDevice(void* hunterArg){
 	HunterType* hunter = (HunterType*) hunterArg;
 	int rand;
-	if (sem_wait(&hunter->room->mutex) < 0) {
-		      printf("semaphore wait error\n");
-		      exit(1);
+	rand = randInt(0,4);
+	while((rand == 0 && hunter->evidenceType == EMF) || (rand == 1 && hunter->evidenceType == TEMPERATURE) || (rand == 2 && hunter->evidenceType == SOUND) || (rand == 3 && hunter->evidenceType == FINGERPRINTS)){
+		rand = randInt(0,3);
 	}
-	HunterNode* curr = hunter->room->hunters->head;
+	if(rand == 0){
+		hunter->evidenceType = EMF;
+		printf("The hunter has swtiched their device type to EMF\n");
+	}else if(rand == 1){
+		hunter->evidenceType = TEMPERATURE;
+		printf("The hunter has swtiched their device type to TEMPERATURE\n");
+	}else if(rand == 2){
+		hunter->evidenceType = SOUND;
+		printf("The hunter has swtiched their device type to SOUND\n");
+	}else if(rand == 3){
+		hunter->evidenceType = FINGERPRINTS;
+		printf("The hunter has swtiched their device type to FINGERPRINTS\n");
+	}
 	
-	printf("We will now communicate evidence!\n");
-	while(curr != NULL ){
-		rand = randInt(0,1);
-		if(rand == 1 && curr->data != hunter){
-			for(int i =0;i <hunter->evidences->size;i++){
-				if(checkForGhostly(hunter->evidences->elements[i])==1){//checking if the evidence is ghostly
-					addToEvidenceArray(curr->data->evidences, hunter->evidences->elements[i]);
-				}
-			}
-			printf("Evidence has been communicated with another hunter");
-			break;
-		}
-		curr = curr->next;
-	}
-	hunter->boredom = hunter->boredom - 1;
-	if (sem_post(&hunter->room->mutex) < 0) {
-		      printf("semaphore wait error\n");
-		      exit(1);
-	}
 }
-
 /*
   Function: hunterMoveRoom
   Purpose:  Moves a hunter to a room
@@ -294,7 +289,7 @@ int findGhost(HunterType* hunter){
 	for(int i = EMF;i <= SOUND;i++){
 		a = 1;
 		for(int j = 0; j < hunter->evidences->size;j++){
-			if(hunter->evidences->elements[j]->evidenceType == i && a == 1){
+			if(hunter->evidences->elements[j]->evidenceType == i && a == 1 && checkForGhostly(hunter->evidences->elements[j]) == 1){
 				find[m] = i;
 				m++;
 				a = 0;
