@@ -48,7 +48,7 @@ void* generateEvidence(void* ghostArg){
 		      exit(1);
 	}
 	EvidenceType* evidence;
-	int type = randInt(0,2);
+	int type = randInt(0,3);
 	int value;
 	if(ghost->ghostType == POLTERGEIST){
 		if(type == 0){
@@ -221,6 +221,6 @@ void printEvidence(EvidenceType* evidence){
 	}else if(evidence->evidenceType == FINGERPRINTS){
 		printf("FINGERPRINTS\n");
 	}else{
-		printf("SOUND");
+		printf("SOUND\n");
 	}
 }
