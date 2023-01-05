@@ -121,7 +121,6 @@ void addToEvidenceArray(EvidenceArrayType*, EvidenceType*);
 void cleanUpEvidenceArray(EvidenceArrayType*);
 int checkForGhostly(EvidenceType*);
 void* readEvidence(void*);
-void* communicatingEvidence(void*);
 void printEvidence(EvidenceType*);
 
 
@@ -152,6 +151,7 @@ void printHunterList(HunterListType*);
 void checkForGhost(HunterType*);
 int findGhost(HunterType*);
 void exitBuilding(HunterType*);
+void* switchDevice(void*);
 
 void initBuilding(BuildingType *);
 void cleanUpBuilding(BuildingType *);
