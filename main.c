@@ -41,8 +41,9 @@ int main(int argc, char *argv[])
 					pthread_create(&threads[i], NULL, hunterMoveRoom, hunters[i]);
 					printf("Hunter %s is in %s \n",hunters[i]->name, hunters[i]->room->name);
 				}else if(no == 1){
-					pthread_create(&threads[i], NULL, communicatingEvidence, hunters[i]);
+					pthread_create(&threads[i], NULL, switchDevice, hunters[i]);
 				}else{
+					printf("The hunter will now read evidence\n");
 					pthread_create(&threads[i], NULL, readEvidence, hunters[i]);
 				}
 			}else{
@@ -79,7 +80,9 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < MAX_HUNTERS; ++i) {
 			if(hunters[i]->fear >=100){
 				printf("Hunter %s has fear >= 100\n", hunters[i]->name);
-				k++;
+				printf("The hunters ran away in fear!\n");
+				printGhost(&(&building)->ghost);
+				printf("The ghost has won!");
 			}else{
 				k = findGhost(hunters[i]);
 				if(k == 0){
@@ -107,11 +110,6 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		if(k==1){
-			printf("The hunters ran away in fear!\n");
-			printGhost(&(&building)->ghost);
-			printf("The ghost has won!");
-		}
     cleanUpBuilding(&building);
     return 0;
 }
